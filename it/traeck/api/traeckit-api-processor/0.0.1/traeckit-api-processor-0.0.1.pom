@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+
+  <modelVersion>4.0.0</modelVersion>
+  <prerequisites>
+    <maven>3.0.0</maven>
+  </prerequisites>
+
+  <parent>
+    <groupId>it.traeck.api</groupId>
+    <artifactId>traeckit-processor-root</artifactId>
+    <version>0.0.1</version>
+  </parent>
+
+  <artifactId>traeckit-api-processor</artifactId>
+  <packaging>jar</packaging>
+
+  <name>TraeckIt :: API :: Measurements Processor</name>
+
+  <properties>
+    <swagger.input>${project.basedir}/src/main/swagger/measurementsProcessorAPI.yaml</swagger.input>
+
+    <feign-version>9.3.1</feign-version>
+    <oltu-version>1.0.1</oltu-version>
+    <swagger-core-version>1.5.10</swagger-core-version>
+    <swagger2markup.version>1.2.0</swagger2markup.version>
+    <asciidoctor.version>1.5.3</asciidoctor.version>
+
+    <generated.asciidoc.directory>${project.build.directory}/asciidoc/generated</generated.asciidoc.directory>
+    <asciidoctor.input.directory>${project.basedir}/src/docs/asciidoc</asciidoctor.input.directory>
+    <asciidoctor.html.output.directory>${project.build.directory}/asciidoc/html</asciidoctor.html.output.directory>
+    <asciidoctor.pdf.output.directory>${project.build.directory}/asciidoc/pdf</asciidoctor.pdf.output.directory>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.github.openfeign</groupId>
+      <artifactId>feign-core</artifactId>
+      <version>${feign-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.github.openfeign</groupId>
+      <artifactId>feign-jackson</artifactId>
+      <version>${feign-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.github.openfeign</groupId>
+      <artifactId>feign-slf4j</artifactId>
+      <version>${feign-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>${swagger-core-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-joda</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.oltu.oauth2</groupId>
+      <artifactId>org.apache.oltu.oauth2.client</artifactId>
+      <version>${oltu-version}</version>
+    </dependency>
+
+    <!-- Test related dependencies -->
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-junit</artifactId>
+      <version>2.0.0.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>${project.build.directory}/generated-swagger-resources</directory>
+        <includes>
+          <include>swagger.json</include>
+        </includes>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.6</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <source>8</source>
+          <target>8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-codegen-maven-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <id>generate-api-model</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${swagger.input}</inputSpec>
+              <language>java</language>
+              <library>feign</library>
+              <modelPackage>it.traeck.measurements.processor.model</modelPackage>
+              <apiPackage>it.traeck.measurements.processor.api</apiPackage>
+              <addCompileSourceRoot>false</addCompileSourceRoot>
+              <configOptions>
+                <sourceFolder>gen/src/main/java</sourceFolder>
+              </configOptions>
+              <output>${project.build.directory}/generated-swagger</output>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-swagger-json</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${swagger.input}</inputSpec>
+              <language>swagger</language>
+              <output>${project.build.directory}/generated-swagger-resources</output>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- First, use the swagger2markup plugin to generate asciidoc -->
+      <plugin>
+        <groupId>io.github.swagger2markup</groupId>
+        <artifactId>swagger2markup-maven-plugin</artifactId>
+        <version>${swagger2markup.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>io.github.swagger2markup</groupId>
+            <artifactId>swagger2markup-import-files-ext</artifactId>
+            <version>${swagger2markup.version}</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <swaggerInput>${project.build.directory}/generated-swagger-resources/swagger.json</swaggerInput>
+          <outputDir>${generated.asciidoc.directory}</outputDir>
+          <config>
+            <swagger2markup.markupLanguage>ASCIIDOC</swagger2markup.markupLanguage>
+            <!--swagger2markup.pathsGroupedBy>TAGS</swagger2markup.pathsGroupedBy-->
+
+            <swagger2markup.extensions.dynamicOverview.contentPath>${project.basedir}/src/docs/asciidoc/extensions/overview</swagger2markup.extensions.dynamicOverview.contentPath>
+            <swagger2markup.extensions.dynamicDefinitions.contentPath>${project.basedir}/src/docs/asciidoc/extensions/definitions</swagger2markup.extensions.dynamicDefinitions.contentPath>
+            <swagger2markup.extensions.dynamicPaths.contentPath>${project.basedir}/src/docs/asciidoc/extensions/paths</swagger2markup.extensions.dynamicPaths.contentPath>
+            <swagger2markup.extensions.dynamicSecurity.contentPath>${project.basedir}src/docs/asciidoc/extensions/security/</swagger2markup.extensions.dynamicSecurity.contentPath>
+          </config>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <goals>
+              <goal>convertSwagger2markup</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Run the generated asciidoc through Asciidoctor to generate
+           other documentation types, such as PDFs or HTML5 -->
+      <plugin>
+          <groupId>org.asciidoctor</groupId>
+          <artifactId>asciidoctor-maven-plugin</artifactId>
+          <version>${asciidoctor.version}</version>
+          <!-- Include Asciidoctor PDF for pdf generation -->
+          <dependencies>
+              <dependency>
+                  <groupId>org.asciidoctor</groupId>
+                  <artifactId>asciidoctorj-pdf</artifactId>
+                  <version>1.5.0-alpha.10.1</version>
+              </dependency>
+          </dependencies>
+          <!-- Configure generic document generation settings -->
+          <configuration>
+              <sourceDirectory>${asciidoctor.input.directory}</sourceDirectory>
+              <sourceDocumentName>index.adoc</sourceDocumentName>
+              <attributes>
+                  <doctype>book</doctype>
+                  <toc>left</toc>
+                  <toclevels>3</toclevels>
+                  <numbered></numbered>
+                  <hardbreaks></hardbreaks>
+                  <sectlinks></sectlinks>
+                  <sectanchors></sectanchors>
+                  <generated>${generated.asciidoc.directory}</generated>
+              </attributes>
+          </configuration>
+          <!-- Since each execution can only handle one backend, run
+               separate executions for each desired output type -->
+          <executions>
+              <execution>
+                  <id>output-html</id>
+                  <phase>test</phase>
+                  <goals>
+                      <goal>process-asciidoc</goal>
+                  </goals>
+                  <configuration>
+                      <backend>html5</backend>
+                      <outputDirectory>${asciidoctor.html.output.directory}</outputDirectory>
+                  </configuration>
+              </execution>
+
+              <execution>
+                  <id>output-pdf</id>
+                  <phase>test</phase>
+                  <goals>
+                      <goal>process-asciidoc</goal>
+                  </goals>
+                  <configuration>
+                      <backend>pdf</backend>
+                      <outputDirectory>${asciidoctor.pdf.output.directory}</outputDirectory>
+                  </configuration>
+              </execution>
+          </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.9.1</version>
+        <executions>
+          <execution>
+            <id>add-generated-source</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-swagger/gen/src/main/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

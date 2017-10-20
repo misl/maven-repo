@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+
+  <modelVersion>4.0.0</modelVersion>
+  <prerequisites>
+    <maven>3.0.0</maven>
+  </prerequisites>
+
+  <groupId>it.traeck.api</groupId>
+  <artifactId>traeckit-processor-root</artifactId>
+  <version>0.0.1</version>
+  <packaging>pom</packaging>
+
+  <name>TraeckIt :: API :: Measurements Processor (root)</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <dropwizard.version>1.0.5</dropwizard.version>
+    <inflector.version>1.0.10</inflector.version>
+    <jackson.version>2.8.5</jackson.version>
+    <jersey.version>2.23.1</jersey.version>
+    <correlation.version>0.0.1</correlation.version>
+
+    <traeckit-model-sensor.version>1.0.0</traeckit-model-sensor.version>
+    <traeckit-model-measurements.version>1.0.0</traeckit-model-measurements.version>
+  </properties>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>jcenter-snapshots</id>
+      <name>jcenter</name>
+      <url>http://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>jcenter-releases</id>
+      <name>jcenter</name>
+      <url>http://jcenter.bintray.com</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <repositories>
+    <repository>
+      <id>jcentral</id>
+      <name>bintray</name>
+      <url>http://jcenter.bintray.com</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>jcenter-snapshots</id>
+      <name>jcenter</name>
+      <url>http://oss.jfrog.org/artifactory/oss-snapshot-local/</url>
+    </repository>
+    <repository>
+      <id>xup-releases</id>
+      <url>https://github.com/misl/maven-repo/raw/master</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+  </build>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>it.traeck.api</groupId>
+        <artifactId>traeckit-api-processor</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>it.traeck.model</groupId>
+        <artifactId>traeckit-model-sensor</artifactId>
+        <version>${traeckit-model-sensor.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>it.traeck.model</groupId>
+        <artifactId>traeckit-model-measurements</artifactId>
+        <version>${traeckit-model-measurements.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <modules>
+    <module>traeckit-processor-api</module>
+    <module>traeckit-processor-sample</module>
+  </modules>
+
+</project>
